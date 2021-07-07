@@ -2,13 +2,16 @@
 import requests
 from bs4 import BeautifulSoup
 from math import ceil
+import time
 
 """
 """
+
+start = time.time()
 
 website = "https://books.toscrape.com/index.html"
 home_response = requests.get(website)
-home_soup = BeautifulSoup(home_response.content, "html.parser")
+home_soup = BeautifulSoup(home_response.text, "lxml")
 
 #Define all the categories that we will be able to scrap
 list=[]
@@ -20,7 +23,7 @@ for category in list[1:]:
     print(f"Starting to scrap {category}.")
     #Define how many pages the category has
     page_count_response = requests.get("https://books.toscrape.com/catalogue/category/books/" + category + "_" + str(list.index(category)+1))
-    page_count_soup = BeautifulSoup(page_count_response.content, "html.parser")
+    page_count_soup = BeautifulSoup(page_count_response.text, "lxml")
     product_count = page_count_soup.find("form", {"class" : "form-horizontal"}).find("strong").text
     page_count = ceil(int(product_count)/20)
 
@@ -36,7 +39,7 @@ for category in list[1:]:
         category_response = requests.get(category_catalog_url)
 
         if category_response.ok:
-            category_soup = BeautifulSoup(category_response.content, "html.parser")
+            category_soup = BeautifulSoup(category_response.text, "lxml")
             for h3 in category_soup.find("ol", {"class" : "row"}).find_all("h3"):
                 a = h3.find('a')
                 link = a['href']
@@ -48,7 +51,7 @@ for category in list[1:]:
         for url in category_urls:
             response = requests.get(url)
             if response.ok:
-                soup = BeautifulSoup(response.content, "html.parser")
+                soup = BeautifulSoup(response.text, "lxml")
 
                 title = soup.find("h1").get_text()
 
@@ -74,3 +77,8 @@ for category in list[1:]:
                 print(f"{title} scrapped.")
 
 print("Done.")
+
+end = time.time()
+elapsed = end - start
+
+print(f"temps d'éxécution : {elapsed}")
