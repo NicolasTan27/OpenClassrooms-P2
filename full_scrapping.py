@@ -3,6 +3,8 @@ import requests
 from bs4 import BeautifulSoup
 from math import ceil
 import time
+import os
+from PIL import Image
 
 """
 """
@@ -18,6 +20,16 @@ list=[]
 category_list = home_soup.find("ul", {"class":"nav nav-list"}).find_all("a")
 for category in category_list:
     list.append(str(category.text).strip().lower().replace(" ","-"))
+
+try:
+    os.mkdir("csv")
+except  OSError as error:
+    print(error)
+
+try:
+    os.mkdir("images")
+except OSError as error:
+    print(error)
 
 for category in list[1:]:
     print(f"Starting to scrap {category}.")
@@ -46,7 +58,7 @@ for category in list[1:]:
                 category_urls.append("https://books.toscrape.com/catalogue/"+ str(link[9:]))
 
 
-    with open(f"{category}.csv", "w", encoding="utf-8") as outf:
+    with open(f"./csv/{category}.csv", "w", encoding="utf-8") as outf:
         outf.write("url;upc;title;price_including_tax;price_excluding_tax;number_available;description;category;rating;image_url")
         for url in category_urls:
             response = requests.get(url)
@@ -71,7 +83,8 @@ for category in list[1:]:
 
                 image = soup.find("div", {"class" : "item active"}).img["src"]
                 image_url = "http://books.toscrape.com/" + image[6:]
-
+                img = Image.open(requests.get(image_url, stream=True).raw)
+                img.save(f'./images/{upc}.jpg')
 
                 outf.write("\n" + url + ";" + upc + ";" + title + ";" + price_including_tax + ";" + price_excluding_tax + ";" + number_available + ";" + description + ";" + category.replace('\n','') + ";" + rating + ";" + image_url)
                 print(f"{title} scrapped.")
