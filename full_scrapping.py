@@ -63,7 +63,7 @@ for category in list[1:]:
         for url in category_urls:
             response = requests.get(url)
             if response.ok:
-                soup = BeautifulSoup(response.text, "lxml")
+                soup = BeautifulSoup(response.content, "lxml")
 
                 title = soup.find("h1").get_text()
 
