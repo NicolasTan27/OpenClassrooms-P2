@@ -11,28 +11,31 @@ from PIL import Image
 
 start = time.time()
 
+#Define all the categories that we will be able to scrap
 website = "https://books.toscrape.com/index.html"
 home_response = requests.get(website)
 home_soup = BeautifulSoup(home_response.text, "lxml")
-
-#Define all the categories that we will be able to scrap
 list=[]
 category_list = home_soup.find("ul", {"class":"nav nav-list"}).find_all("a")
 for category in category_list:
     list.append(str(category.text).strip().lower().replace(" ","-"))
 
+#Create the csv folder if it doesn't exist
 try:
     os.mkdir("csv")
 except  OSError as error:
     print(error)
 
+#Create the images file if it doesn't exist
 try:
     os.mkdir("images")
 except OSError as error:
     print(error)
 
+
 for category in list[1:]:
     print(f"Starting to scrap {category}.")
+
     #Define how many pages the category has
     page_count_response = requests.get("https://books.toscrape.com/catalogue/category/books/" + category + "_" + str(list.index(category)+1))
     page_count_soup = BeautifulSoup(page_count_response.text, "lxml")
