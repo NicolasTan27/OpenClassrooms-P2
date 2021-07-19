@@ -1,4 +1,4 @@
-# OpenClassrooms-P1
+# OpenClassrooms-P2
 Ce projet a pour but de collecter les données du site web bookstoscrap.com
 Le programme récupère les données des livres et les place dans un csv par catégorie
 
